@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitación Especial</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Playfair+Display:wght@400;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #ffeef8 0%, #fff0f5 50%, #e8f4f8 100%);
+            font-family: 'Playfair Display', serif;
+            perspective: 1000px;
+        }
+
+        .scene {
+            position: relative;
+            width: 600px;
+            height: 700px;
+        }
+
+        /* Sobre */
+        .envelope-wrapper {
+            position: absolute;
+            width: 400px;
+            height: 300px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            transition: transform 0.6s ease;
+        }
+
+        .envelope-wrapper.opened {
+            transform: translate(-50%, -50%) scale(0.95);
+        }
+
+        .envelope {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+
+        /* Parte trasera del sobre */
+        .envelope-base {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ffc4d6 0%, #ffb6d9 50%, #ffa8cc 100%);
+            border-radius: 8px;
+            box-shadow: 0 15px 50px rgba(255, 168, 204, 0.4);
+            z-index: 2;
+        }
+
+        /* Solapa superior */
+        .envelope-flap {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 200px solid transparent;
+            border-right: 200px solid transparent;
+            border-top: 150px solid #ff9ec9;
+            top: 0;
+            left: 0;
+            transform-origin: top center;
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 5;
+        }
+
+        .envelope-wrapper.opened .envelope-flap {
+            transform: rotateX(-180deg);
+            border-top-color: #ffc4d6;
+            z-index: 1;
+        }
+
+        /* Decoración del sobre */
+        .envelope-seal {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #fff 0%, #ffe8f5 100%);
+            border-radius: 50%;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 5px 15px rgba(255, 168, 204, 0.3);
+            transition: all 0.6s ease;
+        }
+
+        .envelope-wrapper.opened .envelope-seal {
+            transform: translateX(-50%) scale(0);
+            opacity: 0;
+        }
+
+        /* Carta */
+        .letter {
+            position: absolute;
+            width: 500px;
+            height: 650px;
+            background: linear-gradient(to bottom, #fffef9 0%, #fff9f0 100%);
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            padding: 50px 45px;
+            z-index: 3;
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            opacity: 0;
+        }
+
+        .envelope-wrapper.opened .letter {
+            top: 50%;
+            opacity: 1;
+            z-index: 10;
+            pointer-events: auto;
+        }
+
+        .letter-border {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border: 2px solid #ffc4d6;
+            border-radius: 8px;
+            opacity: 0.3;
+        }
+
+        .letter-content {
+            position: relative;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.6s ease 0.8s;
+            overflow-y: auto;
+        }
+
+        .envelope-wrapper.opened .letter-content {
+            opacity: 1;
+        }
+
+        /* Estilos del contenido */
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            text-align: center;
+            color: #d4719f;
+            font-size: 44px;
+            margin-bottom: 18px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #b08090;
+            font-size: 16px;
+            font-style: italic;
+            margin-bottom: 28px;
+            letter-spacing: 1px;
+        }
+
+        .decorative-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .decorative-divider::before,
+        .decorative-divider::after {
+            content: '';
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #ffc4d6, transparent);
+        }
+
+        .decorative-divider span {
+            margin: 0 15px;
+            font-size: 20px;
+        }
+
+        .intro-text {
+            text-align: center;
+            color: #8b6f7d;
+            line-height: 1.8;
+            margin-bottom: 28px;
+            font-size: 17px;
+        }
+
+        .date-section {
+            background: linear-gradient(135deg, #fff0f5 0%, #ffe8f5 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 2px dashed #ffc4d6;
+            position: relative;
+            z-index: 1;
+        }
+
+        .date-label {
+            display: block;
+            text-align: center;
+            color: #d4719f;
+            margin-bottom: 14px;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .date-input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #ffc4d6;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 18px;
+            background: white;
+            color: #8b6f7d;
+            font-family: 'Playfair Display', serif;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+            cursor: pointer;
+        }
+
+        .date-input:focus {
+            outline: none;
+            border-color: #d4719f;
+            box-shadow: 0 0 0 3px rgba(212, 113, 159, 0.1);
+        }
+
+        .message-reveal {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.6s ease;
+        }
+
+        .message-reveal.active {
+            max-height: 800px;
+        }
+
+        .message-box {
+            margin-top: 25px;
+            padding: 25px;
+            background: linear-gradient(135deg, #ffe8f5 0%, #e8f8ff 100%);
+            border-radius: 15px;
+            border: 2px solid #ffc4d6;
+            box-shadow: 0 5px 20px rgba(255, 168, 204, 0.2);
+        }
+
+        .message-title {
+            color: #d4719f;
+            text-align: center;
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 18px;
+            font-family: 'Dancing Script', cursive;
+        }
+
+        .message-text {
+            color: #8b6f7d;
+            text-align: center;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .countdown-container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 20px 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .countdown-number {
+            font-size: 60px;
+            font-weight: bold;
+            color: #d4719f;
+            font-family: 'Dancing Script', cursive;
+            line-height: 1.2;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .countdown-label {
+            font-size: 16px;
+            color: #b08090;
+            margin-top: 0;
+        }
+
+        .date-disclaimer {
+            text-align: center;
+            color: #b08090;
+            font-size: 14px;
+            font-style: italic;
+            margin-top: 10px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 8px;
+            border: 1px solid rgba(212, 113, 159, 0.2);
+        }
+
+        .final-note {
+            text-align: center;
+            color: #d4719f;
+            font-style: italic;
+            margin-top: 20px;
+            font-size: 16px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+        }
+
+        /* Botón */
+        .open-button {
+            position: absolute;
+            top: 44%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 18px 45px;
+            background: linear-gradient(135deg, #ff9ec9 0%, #ffb6d9 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 25px;
+            font-family: 'Dancing Script', cursive;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(231, 8, 101, 0.5);
+            transition: all 0.3s ease;
+            z-index: 100;
+            font-weight: 600;
+        }
+
+        .open-button:hover {
+            transform: translateX(-50%) translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 168, 204, 0.7);
+        }
+
+        .open-button:active {
+            transform: translateX(-50%) translateY(-1px);
+        }
+
+        .open-button.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(-50%) scale(0.8);
+        }
+
+        /* Partículas flotantes */
+        .floating-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart-particle {
+            position: absolute;
+            font-size: 25px;
+            opacity: 0;
+            animation: float-up 5s ease-in;
+        }
+
+        @keyframes float-up {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-600px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Scrollbar personalizado */
+        .letter-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .letter-content::-webkit-scrollbar-track {
+            background: #ffe8f5;
+            border-radius: 10px;
+        }
+
+        .letter-content::-webkit-scrollbar-thumb {
+            background: #ffc4d6;
+            border-radius: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .scene {
+                width: 100%;
+                padding: 20px;
+            }
+            
+            .envelope-wrapper {
+                width: 90%;
+                height: 250px;
+            }
+            
+            .letter {
+                width: 90%;
+                height: 450px;
+                padding: 35px 25px;
+            }
+            
+            h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-hearts" id="floatingHearts"></div>
+    
+    <div class="scene">
+        <div class="envelope-wrapper" id="envelopeWrapper">
+            <div class="envelope">
+                <div class="envelope-base"></div>
+                <div class="envelope-flap"></div>
+                <div class="envelope-seal">💕</div>
+                
+                <div class="letter">
+                    <div class="letter-border"></div>
+                    <div class="letter-content">
+                        <h1>AMOR</h1>
+                        <p class="subtitle">~ Mensaje importante ~</p>
+                        
+                        <div class="decorative-divider">
+                            <span>✿</span>
+                        </div>
+                        
+                        <p class="intro-text">
+                            Hola mi amor,<br>
+                            “Jesús lo dijo una y otra vez: demuestra tu fe. Hoy saltamos de la barca… aquí empieza nuestra familia.”,<br>
+                            necesito que me des una información muy importante...
+                        </p>
+                        
+                        <div class="date-section">
+                            <label class="date-label">📅 Fecha de tu operación</label>
+                            <input type="date" class="date-input" id="dateInput" placeholder="Selecciona la fecha">
+                        </div>
+                        
+                        <div class="message-reveal" id="messageReveal">
+                            <div class="message-box">
+                                <h2 class="message-title">💕 Charlie te va a decir cuál es la siguiente pista 💕</h2>
+                                
+                                <p class="message-text">
+                                    Tienes que poner la fecha exacta de tu operación<br>
+                                    para que pueda iniciar el conteo.
+                                </p>
+                                
+                                <div class="countdown-container">
+                                    <div style="font-size: 40px; margin-bottom: 10px;">🎉</div>
+                                    <div class="countdown-number" id="daysCount">00</div>
+                                    <div class="countdown-label" id="countdownLabel">días hasta la fecha especial</div>
+                                    <div class="date-disclaimer">
+                                        ⚠️ Esta fecha puede cambiar si tu fecha de operación cambia
+                                    </div>
+                                </div>
+                                
+                                <div class="decorative-divider">
+                                    <span>✿</span>
+                                </div>
+                                
+                                <p class="final-note">
+                                    🗝️ Entra aquí cuando Charlie te dé la nueva pista
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="open-button" id="openButton">
+            💌 Abrir mi Carta
+        </button>
+    </div>
+
+    <script>
+        const envelopeWrapper = document.getElementById('envelopeWrapper');
+        const openButton = document.getElementById('openButton');
+        const dateInput = document.getElementById('dateInput');
+        const messageReveal = document.getElementById('messageReveal');
+        const floatingHearts = document.getElementById('floatingHearts');
+        const daysCount = document.getElementById('daysCount');
+        const countdownLabel = document.getElementById('countdownLabel');
+
+        // Abrir carta
+        openButton.addEventListener('click', () => {
+            envelopeWrapper.classList.add('opened');
+            openButton.classList.add('hidden');
+            createFloatingHearts();
+        });
+
+        // Detectar cambio de fecha
+        dateInput.addEventListener('change', (e) => {
+            if (e.target.value) {
+                setTimeout(() => {
+                    messageReveal.classList.add('active');
+                    startCountdown(e.target.value);
+                }, 300);
+            }
+        });
+
+        // Variable para guardar el intervalo
+        let countdownInterval = null;
+
+        // Cuenta regresiva - SIEMPRE hacia el 3 de enero de 2026
+        function startCountdown(operationDate) {
+            // Limpiar intervalo previo si existe
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+
+            // La fecha objetivo SIEMPRE es el 3 de enero de 2026
+            // La fecha de operación es solo informativa
+            const targetDate = new Date('2026-01-03T00:00:00');
+            countdownLabel.textContent = 'esto es va cambiar nuestras vidas para bien!,';
+            
+            function updateCountdown() {
+                const now = new Date();
+                const diff = targetDate - now;
+                
+                if (diff > 0) {
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    daysCount.textContent = days;
+                } else {
+                    daysCount.textContent = '🎉';
+                    countdownLabel.textContent = '¡Es hoy!';
+                }
+            }
+            
+            updateCountdown();
+            // Actualizar cada minuto en lugar de cada segundo para evitar parpadeo
+            countdownInterval = setInterval(updateCountdown, 60000);
+        }
+
+        // Crear corazones flotantes
+        function createFloatingHearts() {
+            const hearts = ['💕', '💖', '💗', '💝', '💓'];
+            
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart-particle';
+                    heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.fontSize = (Math.random() * 15 + 20) + 'px';
+                    heart.style.animationDelay = Math.random() * 2 + 's';
+                    floatingHearts.appendChild(heart);
+                    
+                    setTimeout(() => heart.remove(), 5000);
+                }, i * 150);
+            }
+        }
+
+        // Iniciar cuenta regresiva inmediatamente al cargar
+        startCountdown(null);
+        
+        // Si ya hay fecha guardada en el input, mostrar el mensaje
+        if (dateInput.value) {
+            messageReveal.classList.add('active');
+        }
+    </script>
+</body>
+</html>
